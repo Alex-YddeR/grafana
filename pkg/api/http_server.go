@@ -33,6 +33,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/alerting"
 	"github.com/grafana/grafana/pkg/services/cleanup"
 	"github.com/grafana/grafana/pkg/services/contexthandler"
+	"github.com/grafana/grafana/pkg/services/dashboardsnapshots"
 	"github.com/grafana/grafana/pkg/services/datasourceproxy"
 	"github.com/grafana/grafana/pkg/services/datasources"
 	"github.com/grafana/grafana/pkg/services/encryption"
@@ -131,6 +132,7 @@ type HTTPServer struct {
 	TeamPermissionsService       *resourcepermissions.Service
 	NotificationService          *notifications.NotificationService
 	DatasourcePermissionsService DatasourcePermissionsService
+	dashboardsnapshotsService    dashboardsnapshots.Service
 }
 
 type ServerOptions struct {
@@ -158,7 +160,7 @@ func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routi
 	dataSourcesService datasources.DataSourceService, secretsService secrets.Service, queryDataService *query.Service,
 	ldapGroups ldap.Groups, teamGuardian teamguardian.TeamGuardian, serviceaccountsService serviceaccounts.Service,
 	authInfoService login.AuthInfoService, resourcePermissionServices *resourceservices.ResourceServices,
-	notificationService *notifications.NotificationService, datasourcePermissionsService DatasourcePermissionsService) (*HTTPServer, error) {
+	notificationService *notifications.NotificationService, datasourcePermissionsService DatasourcePermissionsService, dashboardsnapshotsService dashboardsnapshots.Service) (*HTTPServer, error) {
 	web.Env = cfg.Env
 	m := web.New()
 
@@ -220,6 +222,7 @@ func ProvideHTTPServer(opts ServerOptions, cfg *setting.Cfg, routeRegister routi
 		TeamPermissionsService:       resourcePermissionServices.GetTeamService(),
 		NotificationService:          notificationService,
 		DatasourcePermissionsService: datasourcePermissionsService,
+		dashboardsnapshotsService:    dashboardsnapshotsService,
 	}
 	if hs.Listener != nil {
 		hs.log.Debug("Using provided listener")
